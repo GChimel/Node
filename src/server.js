@@ -1,4 +1,5 @@
 import http from 'http';
+import { json } from './middlewares/json.js';
 
 /* 
   HTTP 
@@ -30,14 +31,14 @@ import http from 'http';
 
 const users = [];
 
-
 // recebe dois parametros: request e response (req e res)
-const server = http.createServer((req, res) => {
+const server = http.createServer(async(req, res) => {
   const { method, url } = req;
+
+  await json(req, res);
 
   //  se o método for GET e a url for /users retorna a listagem de usuários
   if (method === 'GET' && url === '/users') {
-
     return res
     .setHeader('Content-Type', 'application/json')
     .end(JSON.stringify(users))
@@ -45,10 +46,13 @@ const server = http.createServer((req, res) => {
   
   // se o método for POST e a url for /users retorna a criação de usuário
   if (method === 'POST' && url === '/users') {
+
+    const { name, email } = req.body
+
     users.push({
       id: 1,
-      name: 'Jhon Doe',
-      email: 'jhondoe@example.com'
+      name,
+      email,
     })
 
     // 201: Created 
